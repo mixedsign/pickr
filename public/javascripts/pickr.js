@@ -1,4 +1,4 @@
-var Pickr = {
+var pickr = {
 	selected: [],
 }
 
@@ -32,7 +32,7 @@ function toogleCheckBox($box) {
 }
 
 function selectPhoto(id) {
-	Pickr.selected.push(id);
+	pickr.selected.push(id);
 
 	$.get('/thumbnail/' + id, function(data) {
 			$("#selected_photos").append(data);
@@ -44,8 +44,8 @@ function selectPhoto(id) {
 }
 
 function deSelectPhoto(id) {
-	var i = jQuery.inArray(id, Pickr.selected)
-	if ( i != -1 ) Pickr.selected.remove(i); // it's in there
+	var i = jQuery.inArray(id, pickr.selected)
+	if ( i != -1 ) pickr.selected.remove(i); // it's in there
 
 	if ( Pickr.selected.length == 0 ) hideSelector();
 

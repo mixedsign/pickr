@@ -1,2 +1,26 @@
-- Translate / with tests
-- Refactor
+x Translate / with tests
+- need more tests
+x Refactor
+- remove checkbox for image selection
+- serialize Pickr.selected into session
+- make selector get images from Pickr.selected
+- make selector object (Pickr.selector)
+- add selection submission form (read selection from session variable)
+	- email submission to photographer
+	- log submissions to db
+- add authentication for users, photographers, and administrators
+	- add support for viewing private photos
+- add support for multiple galleries and photographer registration
+	- i.e. multiple photographers and multiple galleries per photographer
+- add shopping cart support
+	- alows purchase of prints of various sizes by default
+	- alows photographer to offer custom products
+- make layout completely configurable via css
+	- i.e. each photographer account / gallery can have an unique layout
+- add other back-ends besides flickr
+	- a custom cloud-based storage solution (include dropbox-ese client syncronizer)
+	- smugmug
+	- picasa web
+	- photobucket
+	- generic FTP
+	- generic REST
