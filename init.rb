@@ -1,13 +1,41 @@
 require 'rubygems'
 require 'sinatra'
+require 'haml'
+require 'sinatra/static_assets'
 
 require 'lib/pickr'
 
+get '/thumbnail/:id' do
+	@photo = Pickr::Photo.get(params[:id])
+
+	haml :thumbnail, :layout => false
+end
+
+post '/complete-selection' do
+end
+
+post '/send-request' do
+	# record request
+	# send email
+	""
+end
 
 get '/?' do
-	Pickr::Gallery.get(Pickr::USER_ID).to_html(Pickr::GALLERY_TITLE)
+	haml :entry
 end
 
-get '/:id' do
-	Pickr::PhotoSet.get(params[:id]).to_html(Pickr::SET_PHOTO_SIZE)
+get '/:user_id/sets' do
+	@user_id = params[:user_id]
+	@title   = @user_id
+	@gallery = Pickr::Gallery.get(params[:user_id])
+
+	haml :gallery
 end
+
+get '/:user_id/sets/:set_id' do
+	@set = Pickr::PhotoSet.get(params[:set_id])
+	@user_id = params[:user_id]
+
+	haml :set
+end
+

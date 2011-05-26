@@ -1,3 +1,6 @@
 *.sw*
 tmp
 .gems
+bin
+WEB-INF
+doc
