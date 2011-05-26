@@ -12,7 +12,6 @@ get '/thumbnail/:id' do
 end
 
 post '/complete-selection' do
-
 end
 
 post '/send-request' do
@@ -22,14 +21,20 @@ post '/send-request' do
 end
 
 get '/?' do
-	@title   = Pickr::GALLERY_TITLE
-	@gallery = Pickr::Gallery.get(Pickr::USER_ID)
+	haml :entry
+end
+
+get '/:user_id/sets' do
+	@user_id = params[:user_id]
+	@title   = @user_id
+	@gallery = Pickr::Gallery.get(params[:user_id])
 
 	haml :gallery
 end
 
-get '/:id' do
-	@set = Pickr::PhotoSet.get(params[:id])
+get '/:user_id/sets/:set_id' do
+	@set = Pickr::PhotoSet.get(params[:set_id])
+	@user_id = params[:user_id]
 
 	haml :set
 end

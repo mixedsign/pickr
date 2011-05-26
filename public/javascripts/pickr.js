@@ -47,7 +47,7 @@ function deSelectPhoto(id) {
 	var i = jQuery.inArray(id, pickr.selected)
 	if ( i != -1 ) pickr.selected.remove(i); // it's in there
 
-	if ( Pickr.selected.length == 0 ) hideSelector();
+	if ( pickr.selected.length == 0 ) hideSelector();
 
 	$('#photo_' + id).animate({ opacity : 1 });
 
