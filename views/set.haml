@@ -24,7 +24,7 @@
 #photo-list
 	- @set.photos.each do |photo|
 		.photo-region
-			%a{ :href => '#', :onclick => "toogleCheckBox($('#select_#{photo.id}'));",
+			%a{ :href => '#', :onclick => "pickr.toggleCheckBox($('#select_#{photo.id}'));",
 					:class => 'photo-link' }
 
 				%img{ :class => 'photo', :id => "photo_#{photo.id}", :src => photo.url, :title => photo.title }
