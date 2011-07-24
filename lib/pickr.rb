@@ -26,7 +26,41 @@ module Pickr
 
 	FlickRaw.api_key    = API_KEY		
 
-	class PhotoSet
+  class Cached
+    @@cache = {}
+    def self.cache
+      @@cache
+    end
+
+    def self.cache_by(value, &blk)
+      if cache.has_key?(value) then cache[value]
+      else blk.call(value)
+      end
+    end
+  end
+
+	class Person < Cached
+		attr_accessor :nsid, :username
+
+    alias id nsid
+
+    def initialize(nsid, username)
+      @nsid, @username = nsid, username
+    end
+
+    def self.get(username)
+      cache_by username do
+        p = flickr.people.findByUsername :username => username
+        cache[username] = new(p.nsid, p.username)
+      end
+    end
+
+    def gallery
+      @gallery ||= Gallery.get(nsid)
+    end
+	end
+
+	class PhotoSet < Cached
 		attr_reader   :id, :description, :photos, :primary_photo_id	
 		attr_accessor :title
 
@@ -52,10 +86,11 @@ module Pickr
 		end
 	
 		def self.get(id)
-			set  = flickr.photosets.getPhotos :photoset_id => id
-			info = flickr.photosets.getInfo   :photoset_id => id
-
-			PhotoSet.new(info, set.photo)
+      cache_by id do
+				set  = flickr.photosets.getPhotos :photoset_id => id
+				info = flickr.photosets.getInfo   :photoset_id => id
+				cache[id] = new(info, set.photo)
+      end
 		end
 		
 		def url
@@ -67,7 +102,7 @@ module Pickr
 		end
 	end
 	
-	class Photo
+	class Photo < Cached
 		attr_reader   :title
 		attr_accessor :id, :secret, :server
 	
@@ -79,8 +114,10 @@ module Pickr
 		end
 
 		def self.get(id)
-			photo = flickr.photos.getInfo :photo_id => id
-			Photo.new(id, photo.title, photo.server, photo.secret)
+      cache_by id do
+			  photo = flickr.photos.getInfo :photo_id => id
+			  cache[id] = new(id, photo.title, photo.server, photo.secret)
+      end
 		end
 	
 		# 
@@ -142,17 +179,20 @@ module Pickr
 
 	end # Photo
 	
-	class Gallery
+
+	class Gallery < Cached
 		attr_reader :user_id, :sets
-	
+
 		def initialize(user_id, sets)
 			@user_id = user_id
 			@sets    = sets.map {|s| PhotoSet.new(s) }
 		end
 	
 		def self.get(user_id)
-			sets = flickr.photosets.getList :user_id => user_id
-			self.new(user_id, sets)
+      cache_by user_id do
+			  sets = flickr.photosets.getList :user_id => user_id
+			  cache[user_id] = new(user_id, sets)
+      end
 		end
 	
 		def to_hash(&block)
