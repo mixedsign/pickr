@@ -38,3 +38,21 @@ class TestPhotoSet < Test::Unit::TestCase
 		assert photo.respond_to?(:url), "default photo class is derived but has a 'url' method"
 	end
 end
+
+class TestPerson < Test::Unit::TestCase
+  def setup
+    @person = Pickr::Person.get('drnewman')
+  end
+
+  def test_username
+    assert_equal 'drnewman', @person.username
+  end
+
+  def test_nsid
+    assert_equal '36602382@N00', @person.nsid
+  end
+
+  def test_type
+    assert_instance_of Pickr::Person, @person, "should be an instance of Pickr::Person"
+  end
+end
