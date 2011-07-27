@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 
-require 'lib/pickr'
+require File.join(File.dirname(__FILE__), 'lib/pickr')
 
 
 get '/?' do
