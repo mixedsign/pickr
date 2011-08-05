@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'haml'
 require 'sinatra/static_assets'
+require 'sinatra/url_for'
 
 require 'lib/pickr'
 
@@ -24,10 +25,11 @@ get '/?' do
 	haml :entry
 end
 
-get '/:user_id/sets' do
-	@user_id = params[:user_id]
-	@title   = @user_id
-	@gallery = Pickr::Gallery.get(params[:user_id])
+get '/sets' do
+	@username = params[:u]
+	@title   = "#{@username}'s photos"
+	@gallery = Pickr::Person.get(@username).gallery
+  @user_id = Pickr::Person.get(@username).id
 
 	haml :gallery
 end

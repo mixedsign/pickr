@@ -3,10 +3,12 @@ disable_system_gems
 disable_rubygems
 bundle_path ".gems/bundler_gems"
 
+source :rubygems
 # List gems to bundle here:
 gem 'appengine-rack'
 gem 'sinatra'
 gem 'sinatra-static-assets'
+gem 'emk-sinatra-url-for'
 gem 'dm-core'
 gem 'dm-appengine'
 gem 'haml'
