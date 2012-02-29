@@ -22,4 +22,3 @@ if gal.sets.count > 0
 else
 	puts "no sets found."
 end
-

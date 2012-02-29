@@ -40,4 +40,3 @@ get '/:user_id/sets/:set_id' do
 
 	haml :set
 end
-
