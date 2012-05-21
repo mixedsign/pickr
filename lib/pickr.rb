@@ -46,18 +46,29 @@ module Pickr
   end
 
   class Person < Cached
-    attr_accessor :nsid, :username
+    attr_accessor :nsid, :username, :realname, :location
 
     alias id nsid
 
-    def initialize(nsid, username)
-      @nsid, @username = nsid, username
+    def initialize(nsid, username, realname, location)
+      @nsid, @username, @realname, @location =
+        nsid, username, realname, location
     end
 
     def self.get(username)
       cache_by username do
-        p = flickr.people.findByUsername :username => username
-        cache[username] = new(p.nsid, p.username)
+        id =
+          if username =~ /\d{8,8}\@N\d\d/
+            username
+          else
+            p  = flickr.people.findByUsername :username => username
+            p.id 
+          end
+
+        info = flickr.people.getInfo :user_id => id
+        username = info.username if id == username
+
+        cache[username] = new(id, username, info.realname, info.location)
       end
     end
 

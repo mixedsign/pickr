@@ -10,6 +10,8 @@ $(document).ready(function(){
         if ( $(this).attr('checked') == true ) { selectPhoto($(this).val()) }
         else                                   { deSelectPhoto($(this).val()) }
     });
+
+    $('input[name=u]').click(function(){ $(this).val('') });
 });
 
 // Array Remove - By John Resig (MIT Licensed)

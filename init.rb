@@ -26,26 +26,22 @@ get '/?' do
 end
 
 get '/sets' do
-  @username = params[:u]
-  @title   = "#{@username}'s photos"
-  @gallery = Pickr::Person.get(@username).gallery
-  @user_id = Pickr::Person.get(@username).id
+  @person  = Pickr::Person.get(params[:u])
 
   haml :gallery
 end
 
 get '/:user_id/sets' do
-  @username = params[:user_id]
-  @title   = "#{@username}'s photos"
-  @gallery = Pickr::Gallery.get(@username)
-  @user_id = @username
+  @person  = Pickr::Person.get(params[:user_id])
+
+  p @person.class
 
   haml :gallery
 end
 
 get '/:user_id/sets/:set_id' do
-  @set = Pickr::PhotoSet.get(params[:set_id])
-  @user_id = params[:user_id]
+  @person = Pickr::Person.get(params[:user_id])
+  @set    = Pickr::PhotoSet.get(params[:set_id])
 
   haml :set
 end

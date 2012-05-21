@@ -1,8 +1,8 @@
-%h1= @title
+%h1 #{@person.realname}'s photos
 #set-list
-  - @gallery.sets.each do |set|
+  - @person.gallery.sets.each do |set|
     %div{ :id => "set_#{set.id}" }      
-      %a{ :href => "/#{@user_id}/sets/#{set.id}" }
+      %a{ :href => "/#{@person.username}/sets/#{set.id}" }
         %img{ :src => set.primary_photo.url(:square),
               :id => set.id, :class => 'set-photo', :width => 75, :height => 75 }
-      %a{ :href => "/#{@user_id}/sets/#{set.id}" }= set.title
+      %a{ :href => "/#{@person.username}/sets/#{set.id}" }= set.title
