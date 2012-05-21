@@ -1,0 +1,33 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    emk-sinatra-url-for (0.2.1)
+      sinatra (>= 0.9.1.1)
+    flickraw (0.9.5)
+    flickraw-cached (20110920)
+      flickraw (>= 0.9)
+    haml (3.1.4)
+    json (1.6.5)
+    json (1.6.5-java)
+    rack (1.4.1)
+    rack-protection (1.2.0)
+      rack
+    sinatra (1.3.2)
+      rack (~> 1.3, >= 1.3.6)
+      rack-protection (~> 1.2)
+      tilt (~> 1.3, >= 1.3.3)
+    sinatra-static-assets (1.0.2)
+      sinatra (>= 1.1.0)
+    tilt (1.3.3)
+
+PLATFORMS
+  java
+  ruby
+
+DEPENDENCIES
+  emk-sinatra-url-for
+  flickraw-cached
+  haml
+  json
+  sinatra
+  sinatra-static-assets
