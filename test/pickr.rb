@@ -63,7 +63,7 @@ end
 
 class TestGallery < Test::Unit::TestCase
   def setup
-    @person = Pickr::Person.get('joelyoely')
+    @person = Pickr::Person.get('msdama')
     @gallery = Pickr::Gallery.get(@person.nsid)
   end
 

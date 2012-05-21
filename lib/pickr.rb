@@ -9,6 +9,7 @@ require 'rubygems'
 require 'flickraw'
 require 'yaml'
 require 'json'
+require 'uri'
 
 module Pickr
   $config = YAML.load_file(File.join(File.expand_path(File.dirname(__FILE__)), '../config.yml'))
@@ -27,6 +28,8 @@ module Pickr
 
   FlickRaw.api_key       = API_KEY    
   FlickRaw.shared_secret = SHARED_SECRET
+
+  class Error < Exception; end
 
   class Cached
     @@cache = {}
@@ -55,17 +58,37 @@ module Pickr
         nsid, username, realname, location
     end
 
+    def username(opt=nil)
+      if opt == :urlencoded
+        ::URL::Escape.encode(@username)
+      else
+        @username
+      end
+    end
+
     def self.get(username)
       cache_by username do
         id =
           if username =~ /\d{8,8}\@N\d\d/
             username
           else
-            p  = flickr.people.findByUsername :username => username
+            p =
+              begin
+                flickr.people.findByUsername :username => username
+              rescue => e
+                raise Error, "Couldn't find user, '#{username}'"
+              end
+
             p.id 
           end
 
-        info = flickr.people.getInfo :user_id => id
+        info =
+          begin
+            flickr.people.getInfo :user_id => id
+          rescue
+            raise Error, "Couldn't retrieve user information for, '#{username}'"
+          end
+
         username = info.username if id == username
 
         cache[username] = new(id, username, info.realname, info.location)
@@ -148,50 +171,28 @@ module Pickr
     # 
     def url(type=SET_PHOTO_SIZE)
       return @url unless @url.nil? # allows us to override url generation
-      case type
-      when :square,    'square'    then to_square_url  
-      when :thumbnail, 'thumbnail' then to_thumbnail_url
-      when :original,  'original'  then to_original_url
-      when :medium,    'medium'    then to_medium_url
-      when :page,      'page'      then to_page_url
-      when :lightbox,  'lightbox'  then to_lightbox_url
-      else to_medium_url # defaults to medium
+
+      base_url = "#{FLICKR_STATIC_URL}/#{@server}/#{@id}_#{@secret}"
+      page_url = "#{FLICKR_PHOTO_URL}/#{USER_ID}/#{@id}"
+
+      sizes = {
+        :square    => "#{base_url}_s.jpg",
+        :thumbnail => "#{base_url}_t.jpg",
+        :original  => "#{base_url}.jpg",
+        :medium    => "#{base_url}_m.jpg",
+        :page      => page_url,
+        :lightbox  => "#{page_url}/lightbox"
+      }
+      
+      unless sizes.keys.include?(type.to_sym)
+        raise Error, "'#{type}' is not a valid URL type" 
       end
+
+      sizes[type.to_sym]
     end
 
     def url=(value)
       @url = value
-    end
-  
-    private
-
-    # XXX: It seems there might be a more rubyish way of doing this
-    def to_base_url
-      @base_url ||= "#{FLICKR_STATIC_URL}/#{@server}/#{@id}_#{@secret}"
-    end
-
-    def to_square_url
-      @square_url ||= "#{to_base_url}_s.jpg"
-    end
-  
-    def to_thumbnail_url
-      @thumbnail_url ||= "#{to_base_url}_t.jpg"
-    end
-  
-    def to_original_url
-      @original_url ||= "#{to_base_url}.jpg"
-    end
-  
-    def to_medium_url
-      @medium_url ||= "#{to_base_url}_m.jpg"
-    end
-  
-    def to_page_url
-      @page_url ||= "#{FLICKR_PHOTO_URL}/#{USER_ID}/#{@id}"
-    end
-
-    def to_lightbox_url
-      @lightbox_url ||= "#{to_page_url}/lightbox"
     end
 
   end # Photo
@@ -208,7 +209,6 @@ module Pickr
     def self.get(user_id)
       cache_by user_id do
         sets = flickr.photosets.getList :user_id => user_id
-        p sets
         cache[user_id] = new(user_id, sets)
       end
     end

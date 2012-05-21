@@ -26,15 +26,13 @@ get '/?' do
 end
 
 get '/sets' do
-  @person  = Pickr::Person.get(params[:u])
-
+  @person = Pickr::Person.get(params[:u])
+  
   haml :gallery
 end
 
 get '/:user_id/sets' do
   @person  = Pickr::Person.get(params[:user_id])
-
-  p @person.class
 
   haml :gallery
 end
