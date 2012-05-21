@@ -6,7 +6,7 @@
 #
 
 require 'rubygems'
-require 'flickraw-cached'
+require 'flickraw'
 require 'yaml'
 require 'json'
 
@@ -18,18 +18,24 @@ module Pickr
 
   # TODO: make these optionally configurable in a db also
   API_KEY             = $config['flickr_api_key'].freeze
+  SHARED_SECRET       = $config['flickr_shared_secret'].freeze
   AUTH_TOKEN          = $config['auth_token'].freeze
   USER_ID             = $config['user_id'].freeze
   PRIMARY_PHOTO_CACHE = $config['primary_photo_cache'].freeze
   GALLERY_TITLE       = $config['gallery_title'].freeze
   SET_PHOTO_SIZE      = $config['set_photo_size'].freeze
 
-  FlickRaw.api_key    = API_KEY    
+  FlickRaw.api_key       = API_KEY    
+  FlickRaw.shared_secret = SHARED_SECRET
 
   class Cached
     @@cache = {}
     def self.cache
       @@cache
+    end
+
+    def self.clear_cache
+      @@cache = {}
     end
 
     def self.cache_by(value, &blk)
@@ -56,7 +62,7 @@ module Pickr
     end
 
     def gallery
-      @gallery ||= Gallery.get(nsid)
+      @gallery ||= Gallery.get(@nsid)
     end
   end
 
@@ -185,12 +191,13 @@ module Pickr
 
     def initialize(user_id, sets)
       @user_id = user_id
-      @sets    = sets.map {|s| PhotoSet.new(s) }
+      @sets    = sets.map { |s| PhotoSet.new(s) }
     end
   
     def self.get(user_id)
       cache_by user_id do
         sets = flickr.photosets.getList :user_id => user_id
+        p sets
         cache[user_id] = new(user_id, sets)
       end
     end

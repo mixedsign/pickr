@@ -34,6 +34,15 @@ get '/sets' do
   haml :gallery
 end
 
+get '/:user_id/sets' do
+  @username = params[:user_id]
+  @title   = "#{@username}'s photos"
+  @gallery = Pickr::Gallery.get(@username)
+  @user_id = @username
+
+  haml :gallery
+end
+
 get '/:user_id/sets/:set_id' do
   @set = Pickr::PhotoSet.get(params[:set_id])
   @user_id = params[:user_id]
