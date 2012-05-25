@@ -1,3 +1,6 @@
+#entry
+  =haml :entry, :layout => false
+
 - if !@person.realname.nil? && @person.realname != ''
   %h1 #{@person.realname}'s photos
 - else
