@@ -3,8 +3,12 @@ require 'sinatra'
 require 'haml'
 require 'sinatra/static_assets'
 require 'sinatra/url_for'
+require 'rack-flash'
 
 require 'lib/pickr'
+
+enable :sessions
+use Rack::Flash
 
 get '/thumbnail/:id' do
   @photo = Pickr::Photo.get(params[:id])
@@ -26,20 +30,35 @@ get '/?' do
 end
 
 get '/sets' do
-  @person = Pickr::Person.get(params[:u])
+  begin
+    @person = Pickr::Person.get(params[:u])
+  rescue Pickr::Error => e
+    flash[:error] = e.message
+    redirect to('/')
+  end
   
   haml :gallery
 end
 
 get '/:user_id/sets' do
-  @person  = Pickr::Person.get(params[:user_id])
+  begin
+    @person = Pickr::Person.get(params[:user_id])
+  rescue Pickr::Error => e
+    flash[:error] = e.message
+    redirect to('/')
+  end
 
   haml :gallery
 end
 
 get '/:user_id/sets/:set_id' do
-  @person = Pickr::Person.get(params[:user_id])
-  @set    = Pickr::PhotoSet.get(params[:set_id])
+  begin
+    @person = Pickr::Person.get(params[:user_id])
+    @set    = Pickr::PhotoSet.get(params[:set_id])
+  rescue
+    flash[:error] = e.message
+    redirect to("/#{params[:user_id]}/sets")
+  end
 
   haml :set
 end

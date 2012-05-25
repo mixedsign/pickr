@@ -60,7 +60,7 @@ module Pickr
 
     def username(opt=nil)
       if opt == :urlencoded
-        ::URL::Escape.encode(@username)
+        ::URI.escape(@username)
       else
         @username
       end
@@ -116,7 +116,7 @@ module Pickr
     private
     
     def construct_photos(photos)
-      photos.map {|p| Photo.new(p.id, p.title, p.server, p.secret) }
+      photos.map { |p| Photo.new(p.id, p.title, p.server, p.secret) }
     end
 
     public
@@ -127,8 +127,12 @@ module Pickr
   
     def self.get(id)
       cache_by id do
-        set  = flickr.photosets.getPhotos :photoset_id => id
-        info = flickr.photosets.getInfo   :photoset_id => id
+        begin
+          set  = flickr.photosets.getPhotos :photoset_id => id
+          info = flickr.photosets.getInfo   :photoset_id => id
+        rescue
+          raise Error, "Couldn't retrieve photoset #{id}"
+        end
         cache[id] = new(info, set.photo)
       end
     end
@@ -155,7 +159,11 @@ module Pickr
 
     def self.get(id)
       cache_by id do
-        photo = flickr.photos.getInfo :photo_id => id
+        begin
+          photo = flickr.photos.getInfo :photo_id => id
+        rescue
+          raise Error, "Couldn't retrieve photo #{id}"
+        end
         cache[id] = new(id, photo.title, photo.server, photo.secret)
       end
     end
@@ -208,7 +216,11 @@ module Pickr
   
     def self.get(user_id)
       cache_by user_id do
-        sets = flickr.photosets.getList :user_id => user_id
+        begin
+          sets = flickr.photosets.getList :user_id => user_id
+        rescue
+          raise Error, "Couldn't retrieve photosets for user #{user_id}"
+        end
         cache[user_id] = new(user_id, sets)
       end
     end
