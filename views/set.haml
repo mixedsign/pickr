@@ -1,15 +1,5 @@
 :css
-  #selector {
-    position: relative;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    background: grey;
-    padding: 10px;
-    display: none;
-  }
 
-  .selector-thumb { display: inline }
 
 #selector
   =haml :selector
@@ -27,9 +17,9 @@
       %a{ :href => '#', :onclick => "toogleCheckBox($('#select_#{photo.id}'));",
           :class => 'photo-link' }
 
-        %img{ :class => 'photo', :id => "photo_#{photo.id}", :src => photo.url, :title => photo.title }
+        %img{ :class => 'photo', :id => "photo_#{photo.id}", :src => photo.url(:square150), :title => photo.title }
 
-      %br
-      %input{ :type => 'checkbox', :name => 'photo', :id => "select_#{photo.id}", :value => photo.id }
-      %label{ :for => "select_#{photo.id}" } Select
-      %a{ :href => photo.url(:lightbox), :target => "__page-#{photo.id}" } view on flickr
+      .controls
+        %input{ :type => 'checkbox', :name => 'photo', :id => "select_#{photo.id}", :value => photo.id }
+        %label{ :for => "select_#{photo.id}" } Select
+        %a{ :href => photo.url(:lightbox), :target => "__page-#{photo.id}" } view on flickr

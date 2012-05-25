@@ -171,6 +171,8 @@ module Pickr
     # 
     # Generates url for photo of type:
     # - square
+    # - square75
+    # - square150
     # - thumbnail
     # - original
     # - medium
@@ -185,12 +187,16 @@ module Pickr
 
       sizes = {
         :square    => "#{base_url}_s.jpg",
+        :square150 => "#{base_url}_q.jpg",
         :thumbnail => "#{base_url}_t.jpg",
         :original  => "#{base_url}.jpg",
         :medium    => "#{base_url}_m.jpg",
         :page      => page_url,
         :lightbox  => "#{page_url}/lightbox"
       }
+
+      # alias for :square
+      sizes[:square75] = sizes[:square]
       
       unless sizes.keys.include?(type.to_sym)
         raise Error, "'#{type}' is not a valid URL type" 

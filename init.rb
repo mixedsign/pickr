@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'haml'
+require 'sass'
 require 'sinatra/static_assets'
 require 'sinatra/url_for'
 require 'rack-flash'
@@ -23,6 +24,10 @@ post '/send-request' do
   # record request
   # send email
   ""
+end
+
+get '/style/default.css' do
+  sass :style
 end
 
 get '/?' do
