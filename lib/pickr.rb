@@ -31,24 +31,26 @@ module Pickr
 
   class Error < Exception; end
 
-  class Cached
+  module Cached
     @@cache = {}
-    def self.cache
+    def cache
       @@cache
     end
 
-    def self.clear_cache
+    def clear_cache
       @@cache = {}
     end
 
-    def self.cache_by(value, &blk)
+    def cache_by(value, &blk)
       if cache.has_key?(value) then cache[value]
       else blk.call(value)
       end
     end
   end
 
-  class Person < Cached
+  class Person
+    extend Cached
+
     attr_accessor :nsid, :username, :realname, :location
 
     alias id nsid
@@ -67,7 +69,7 @@ module Pickr
     end
 
     def self.get(username)
-      cache_by :"person-#{username}" do
+      cache_by :"person-#{username}" do |k|
         id =
           if username =~ /\d{8,8}\@N\d\d/
             username
@@ -91,11 +93,11 @@ module Pickr
 
         username = info.username if id == username
 
-        cache[username] =
+        cache[k] =
           if info.respond_to?(:realname) && info.respond_to?(:location)
-            Person.new(id, username, info.realname, info.location)
+            new(id, username, info.realname, info.location)
           else
-            Person.new(id, username, '', '')
+            new(id, username, '', '')
           end
       end
     end
@@ -105,7 +107,9 @@ module Pickr
     end
   end
 
-  class PhotoSet < Cached
+  class PhotoSet
+    extend Cached
+
     attr_reader   :id, :description, :photos, :primary_photo_id  
     attr_accessor :title
 
@@ -122,24 +126,39 @@ module Pickr
     private
     
     def construct_photos(photos)
-      photos.map { |p| Photo.new(:id => p.id, :nsid => @user_id, :title => p.title, :server => p.server, :secret => p.secret) }
+      photos.map do |p|
+        Photo.new(
+          :id     => p.id,
+          :nsid   => @user_id,
+          :title  => p.title,
+          :server => p.server,
+          :secret => p.secret
+        )
+      end
     end
 
     public
   
     def primary_photo
-      @primary_photo ||= Photo.new(:id => @set.primary, :title => @set.title, :server => @set.server, :secret => @set.secret, :nsid => @user_id)
+      @primary_photo ||= 
+        Photo.new(
+          :id     => @set.primary,
+          :title  => @set.title,
+          :server => @set.server,
+          :secret => @set.secret,
+          :nsid   => @user_id
+        )
     end
   
     def self.get(id)
-      cache_by :"photoset-#{id}" do
+      cache_by :"photoset-#{id}" do |k|
         begin
           set  = flickr.photosets.getPhotos :photoset_id => id
           info = flickr.photosets.getInfo   :photoset_id => id
         rescue
           raise Error, "Couldn't retrieve photoset #{id}"
         end
-        cache[id] = new(info, set.photo)
+        cache[k] = new(info, set.photo)
       end
     end
     
@@ -152,7 +171,9 @@ module Pickr
     end
   end
   
-  class Photo < Cached
+  class Photo
+    extend Cached
+
     attr_reader   :title, :nsid
     attr_accessor :id, :secret, :server
   
@@ -165,7 +186,7 @@ module Pickr
     end
 
     def self.get(id)
-      cache_by :"photo-#{id}" do
+      cache_by :"photo-#{id}" do |k|
         begin
           photo = flickr.photos.getInfo :photo_id => id
         rescue
@@ -174,7 +195,7 @@ module Pickr
 
         user_id = photo.respond_to?(:owner) && photo.owner.respond_to?(:nsid) && photo.owner.nsid
 
-        cache[id] = new(:id => id, :title => photo.title, :server => photo.server, :secret => photo.secret, :nsid => user_id)
+        cache[k] = new(:id => id, :title => photo.title, :server => photo.server, :secret => photo.secret, :nsid => user_id)
       end
     end
   
@@ -224,7 +245,9 @@ module Pickr
   end # Photo
   
 
-  class Gallery < Cached
+  class Gallery
+    extend Cached
+
     attr_reader :user_id, :sets
 
     def initialize(user_id, sets)
@@ -233,13 +256,13 @@ module Pickr
     end
   
     def self.get(user_id)
-      cache_by :"gallery-#{user_id}" do
+      cache_by :"gallery-#{user_id}" do |k|
         begin
           sets = flickr.photosets.getList :user_id => user_id
         rescue
           raise Error, "Couldn't retrieve photosets for user #{user_id}"
         end
-        cache[user_id] = new(user_id, sets)
+        cache[k] = new(user_id, sets)
       end
     end
   
