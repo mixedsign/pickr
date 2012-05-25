@@ -67,7 +67,7 @@ module Pickr
     end
 
     def self.get(username)
-      cache_by username do
+      cache_by :"person-#{username}" do
         id =
           if username =~ /\d{8,8}\@N\d\d/
             username
@@ -91,11 +91,12 @@ module Pickr
 
         username = info.username if id == username
 
-        if info.respond_to?(:realname) && info.respond_to?(:location)
-          cache[username] = new(id, username, info.realname, info.location)
-        else
-          cache[username] = new(id, username, '', '')
-        end
+        cache[username] =
+          if info.respond_to?(:realname) && info.respond_to?(:location)
+            Person.new(id, username, info.realname, info.location)
+          else
+            Person.new(id, username, '', '')
+          end
       end
     end
 
@@ -131,7 +132,7 @@ module Pickr
     end
   
     def self.get(id)
-      cache_by id do
+      cache_by :"photoset-#{id}" do
         begin
           set  = flickr.photosets.getPhotos :photoset_id => id
           info = flickr.photosets.getInfo   :photoset_id => id
@@ -164,7 +165,7 @@ module Pickr
     end
 
     def self.get(id)
-      cache_by id do
+      cache_by :"photo-#{id}" do
         begin
           photo = flickr.photos.getInfo :photo_id => id
         rescue
@@ -232,7 +233,7 @@ module Pickr
     end
   
     def self.get(user_id)
-      cache_by user_id do
+      cache_by :"gallery-#{user_id}" do
         begin
           sets = flickr.photosets.getList :user_id => user_id
         rescue
