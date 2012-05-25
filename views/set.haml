@@ -1,9 +1,3 @@
-:css
-
-
-#selector
-  =haml :selector
-
 %a{ :href => "/#{@person.username}/sets" } &lt;&lt;Back to Index
 
 %h1= @set.title
@@ -14,10 +8,8 @@
 #photo-list
   - @set.photos.each do |photo|
     .photo-region
-      %a{ :href => '#', :onclick => "toogleCheckBox($('#select_#{photo.id}'));",
-          :class => 'photo-link' }
-
-        %img{ :class => 'photo', :id => "photo_#{photo.id}", :src => photo.url(:square150), :title => photo.title }
+      %a{ :href => '#', :onclick => "toogleCheckBox($('#select_#{photo.id}'));", :class => 'photo-link' }
+        %img{ :class => 'photo', :id => "photo_#{photo.id}", :src => photo.url(:square150), :title => photo.title, :width => 150, :height => 150 }
 
       .controls
         %input{ :type => 'checkbox', :name => 'photo', :id => "select_#{photo.id}", :value => photo.id }

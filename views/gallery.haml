@@ -1,8 +1,11 @@
-%h1 #{@person.realname}'s photos
+- if !@person.realname.nil? && @person.realname != ''
+  %h1 #{@person.realname}'s photos
+- else
+  %h1 #{@person.username}'s photos
+
 #set-list
   - @person.gallery.sets.each do |set|
     %div{ :id => "set_#{set.id}" }      
       %a{ :href => "/#{@person.username(:urlencoded)}/sets/#{set.id}" }
-        %img{ :src => set.primary_photo.url(:square),
-              :id => set.id, :class => 'set-photo', :width => 75, :height => 75 }
+        %img{ :src => set.primary_photo.url(:square), :id => set.id, :class => 'set-photo', :width => 75, :height => 75 }
       %a{ :href => "/#{@person.username(:urlencoded)}/sets/#{set.id}" }= set.title

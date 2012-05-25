@@ -6,7 +6,6 @@ $(document).ready(function(){
     $('#selector #close-button').click(hideSelector);
 
     $('input[name=photo]').change(function(){
-        alert("changed");
         if ( $(this).attr('checked') == true ) { selectPhoto($(this).val()) }
         else                                   { deSelectPhoto($(this).val()) }
     });

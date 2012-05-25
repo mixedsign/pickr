@@ -91,7 +91,11 @@ module Pickr
 
         username = info.username if id == username
 
-        cache[username] = new(id, username, info.realname, info.location)
+        if info.respond_to?(:realname) && info.respond_to?(:location)
+          cache[username] = new(id, username, info.realname, info.location)
+        else
+          cache[username] = new(id, username, '', '')
+        end
       end
     end
 
@@ -107,6 +111,7 @@ module Pickr
     def initialize(set, photos=[])
       @set              = set
       @id               = set.id
+      @user_id          = set.respond_to?(:owner) && set.owner
       @title            = set.title
       @description      = set.description
       @photos           = construct_photos(photos)
@@ -116,13 +121,13 @@ module Pickr
     private
     
     def construct_photos(photos)
-      photos.map { |p| Photo.new(p.id, p.title, p.server, p.secret) }
+      photos.map { |p| Photo.new(:id => p.id, :nsid => @user_id, :title => p.title, :server => p.server, :secret => p.secret) }
     end
 
     public
   
     def primary_photo
-      @primary_photo ||= Photo.new(@set.primary, @set.title, @set.server, @set.secret)
+      @primary_photo ||= Photo.new(:id => @set.primary, :title => @set.title, :server => @set.server, :secret => @set.secret, :nsid => @user_id)
     end
   
     def self.get(id)
@@ -138,7 +143,7 @@ module Pickr
     end
     
     def url
-      "#{FLICKR_PHOTO_URL}/#{USER_ID}/sets/#{@id}"
+      "#{FLICKR_PHOTO_URL}/#{@user_id}/sets/#{@id}"
     end
   
     def to_hash
@@ -147,14 +152,15 @@ module Pickr
   end
   
   class Photo < Cached
-    attr_reader   :title
+    attr_reader   :title, :nsid
     attr_accessor :id, :secret, :server
   
-    def initialize(id, title, server, secret)
-      @id     = id
-      @title  = title != '' ? title : "Untitled"
-      @server = server
-      @secret = secret
+    def initialize(args)
+      @id      = args[:id]     || raise(Error, "id is required")
+      @server  = args[:server] || raise(Error, "server is required")
+      @secret  = args[:secret] || raise(Error, "secret is required")
+      @user_id = args[:nsid]
+      @title   = args[:title] != '' ? title : "Untitled"
     end
 
     def self.get(id)
@@ -164,7 +170,10 @@ module Pickr
         rescue
           raise Error, "Couldn't retrieve photo #{id}"
         end
-        cache[id] = new(id, photo.title, photo.server, photo.secret)
+
+        user_id = photo.respond_to?(:owner) && photo.owner.respond_to?(:nsid) && photo.owner.nsid
+
+        cache[id] = new(:id => id, :title => photo.title, :server => photo.server, :secret => photo.secret, :nsid => user_id)
       end
     end
   
@@ -182,8 +191,10 @@ module Pickr
     def url(type=SET_PHOTO_SIZE)
       return @url unless @url.nil? # allows us to override url generation
 
+      @user_id ||= Photo.get(@id).nsid
+
       base_url = "#{FLICKR_STATIC_URL}/#{@server}/#{@id}_#{@secret}"
-      page_url = "#{FLICKR_PHOTO_URL}/#{USER_ID}/#{@id}"
+      page_url = "#{FLICKR_PHOTO_URL}/#{@user_id}/#{@id}"
 
       sizes = {
         :square    => "#{base_url}_s.jpg",

@@ -6,4 +6,10 @@
     = javascript_script_tag *scripts
     = stylesheet_link_tag '/style/default.css'
   %body
-    = yield
+    #selector
+      =haml :selector
+    #container
+      #header
+      #main
+        = yield
+      #footer

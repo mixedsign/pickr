@@ -60,7 +60,7 @@ get '/:user_id/sets/:set_id' do
   begin
     @person = Pickr::Person.get(params[:user_id])
     @set    = Pickr::PhotoSet.get(params[:set_id])
-  rescue
+  rescue Pickr::Error => e
     flash[:error] = e.message
     redirect to("/#{params[:user_id]}/sets")
   end

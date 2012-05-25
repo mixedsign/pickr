@@ -1,18 +1,34 @@
+body
+  font-family: Ubuntu, sans-serif
+  font-size: 10pt
+  margin: 0
+  padding: 0
+
+#container
+  margin: 10px
+
 .set-photo, .photo
   background: url(/images/loading.gif) center no-repeat
   background-color: white
 
 .photo-region
-  width: 300px
+  width: 160px
   display: inline-block
+  margin: 5px
 
 #selector
   position: fixed
   top: 0
   width: 100%
   background: grey
+  opacity: 0.9
+
   padding: 10px
   display: none
+  z-index: 9999
 
 .selector-thumb
   display: inline
+
+img
+  background: white url(/images/loading.gif) center no-repeat
