@@ -93,9 +93,14 @@ module Pickr
     # `Pickr::Person.get(username) -> Pickr::Person`
     #
     # Factory method--fetches person information from Flickr
-    # and builds a `Pickr::Person` instance.
+    # and builds a `Pickr::Person` instance. A `Pickr::Error`
+    # is raised if communcation with the Flickr API fails.
     #
     # `username` - a Flickr users NSID or valid username
+    #
+    # Examples:
+    #   `Pickr::Person.get('99999999@N00')`
+    #   `Pickr::Person.get('some user name')`
     #
     def self.get(username)
       cache_by :"person-#{username}" do |k|
@@ -210,9 +215,13 @@ module Pickr
     # `Pickr::PhotoSet.get(id) -> Pickr::PhotoSet`
     #
     # Factory method--fetches photoset information from Flickr
-    # and builds a `Pickr::PhotoSet` instance.
+    # and builds a `Pickr::PhotoSet` instance. A `Pickr::Error`
+    # is raised if communication with the Flickr API fails.
     #
     # `id` - a Flickr a photoset id
+    #
+    # Example:
+    #   `Pickr::PhotoSet.get('131095211232')`
     #
     def self.get(id)
       cache_by :"photoset-#{id}" do |k|
@@ -233,7 +242,7 @@ module Pickr
     # URL on Flickr
     #
     # Example:
-    #   @photoset.url
+    #   `@photoset.url`
     #
     def url
       "#{FLICKR_PHOTO_URL}/#{@user_id}/sets/#{@id}"
@@ -247,16 +256,16 @@ module Pickr
     attr_accessor :id, :secret, :server
   
     #
-    # Pickr::Photo.new(args) -> Pickr::Photo
+    # `Pickr::Photo.new(args) -> Pickr::Photo`
     #
     # args - a hash containing arguments for building
-    # Pickr::Photo instances, the arguments are specified below:
+    # `Pickr::Photo` instances, the arguments are specified below:
     #   
-    #   :id     - Flickr photo id (required)
-    #   :server - Flickr server id (required) 
-    #   :secret - Flickr secret id (required)
-    #   :nsid   - Flickr user id (optional)
-    #   :title  - photo title (optional)
+    #   `:id`     - Flickr photo id (required)
+    #   `:server` - Flickr server id (required) 
+    #   `:secret` - Flickr secret id (required)
+    #   `:nsid`   - Flickr user id (optional)
+    #   `:title`  - photo title (optional)
     #
     def initialize(args)
       @id      = args[:id]     || raise(Error, "id is required")
@@ -267,12 +276,13 @@ module Pickr
     end
 
     #
-    # Pickr::Photo.get(id) -> Pickr::Photo
+    # `Pickr::Photo.get(id) -> Pickr::Photo`
     #
     # Factory method--fetches photo information from Flickr
-    # and builds Pickr::Photo instance.
+    # and builds `Pickr::Photo` instance. A `Pickr::Error`
+    # is raised if communication fails with the Flickr API.
     #
-    # id - the photo's Flickr id
+    # `id` - the photo's Flickr id
     #
     def self.get(id)
       cache_by :"photo-#{id}" do |k|
@@ -295,17 +305,17 @@ module Pickr
     end
   
     #
-    # Pickr::Photo#url(type=:medium) -> String
+    # `Pickr::Photo#url(type=:medium) -> String`
     #
     # Generates url for photo of type:
-    # - :square
-    # - :square75
-    # - :square150
-    # - :thumbnail
-    # - :original
-    # - :medium
-    # - :page
-    # - :lightbox
+    # - `:square`
+    # - `:square75`
+    # - `:square150`
+    # - `:thumbnail`
+    # - `:original`
+    # - `:medium`
+    # - `:page`
+    # - `:lightbox`
     # 
     def url(type=:medium)
       return @url unless @url.nil? # allows us to override url generation
