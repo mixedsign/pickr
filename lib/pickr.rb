@@ -308,14 +308,15 @@ module Pickr
     # `Pickr::Photo#url(type=:medium) -> String`
     #
     # Generates url for photo of type:
-    # - `:square`
-    # - `:square75`
-    # - `:square150`
-    # - `:thumbnail`
-    # - `:original`
-    # - `:medium`
-    # - `:page`
-    # - `:lightbox`
+    #
+    #   - `:square`
+    #   - `:square75`
+    #   - `:square150`
+    #   - `:thumbnail`
+    #   - `:original`
+    #   - `:medium`
+    #   - `:page`
+    #   - `:lightbox`
     # 
     def url(type=:medium)
       return @url unless @url.nil? # allows us to override url generation
@@ -335,7 +336,7 @@ module Pickr
         :lightbox  => "#{page_url}/lightbox"
       }
 
-      # alias for :square
+      # alias for `:square`
       sizes[:square75] = sizes[:square]
       
       unless sizes.keys.include?(type.to_sym)
