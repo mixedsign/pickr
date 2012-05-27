@@ -1,11 +1,7 @@
-JRUBY_BIN = "/home/delon/.rvm/gems/jruby-1.5.6/bin"
+require 'rubygems'
+require 'bundler'
+Bundler.require
 
-desc "Deploy to Google Appengine"
-task :deploy do
-	sh "#{JRUBY_BIN}/appcfg.rb update ."
-end
+require 'rokko/task'
 
-desc "Run development server"
-task :server do
-	sh "#{JRUBY_BIN}/dev_appserver.rb ."
-end
+Rokko::Task.new(:rokko, 'docs', ['lib/**/*.rb', 'README.md'], {:index => true, :local => true})

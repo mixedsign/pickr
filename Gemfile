@@ -8,3 +8,7 @@ gem 'sass'
 gem 'flickraw-cached'
 gem 'json'
 gem 'rack-flash3'
+
+group :development do
+  gem 'rokko'
+end
