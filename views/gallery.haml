@@ -2,9 +2,9 @@
   =haml :entry, :layout => false
 
 - if !@person.realname.nil? && @person.realname != ''
-  %h1 #{@person.realname}'s photos
+  %h1 #{possessive @person.realname} photos
 - else
-  %h1 #{@person.username}'s photos
+  %h1 #{possessive @person.username} photos
 
 #set-list
   - @person.gallery.sets.each do |set|

@@ -1,4 +1,5 @@
 require 'lib/pickr'
+require 'lib/pickr/helpers'
 require 'test/unit'
 
 require 'rubygems'
@@ -69,5 +70,26 @@ class TestGallery < Test::Unit::TestCase
 
   def test_sets
     assert !@gallery.sets.empty?, "sets should not be empty"
+  end
+end
+
+class TestPosessiveHelper < Test::Unit::TestCase
+  include Pickr::Helpers
+
+  def setup
+    @names = {
+      'John'     => "John's",
+      'Dave'     => "Dave's",
+      'Sharron'  => "Sharron's",
+      'Starbuck' => "Starbuck's",
+      'Starz'    => "Starz'",
+      'Status'   => "Status'"
+    }
+  end
+
+  def test_names
+    @names.each_pair do |k, v|
+      assert_equal possessive(k), v, "possessive('#{k}') should equal #{v}"
+    end
   end
 end

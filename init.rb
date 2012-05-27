@@ -7,9 +7,14 @@ require 'sinatra/url_for'
 require 'rack-flash'
 
 require 'lib/pickr'
+require 'lib/pickr/helpers'
 
 enable :sessions
 use Rack::Flash
+
+helpers do
+  include Pickr::Helpers
+end
 
 get '/thumbnail/:id' do
   @photo = Pickr::Photo.get(params[:id])
